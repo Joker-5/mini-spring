@@ -1,6 +1,6 @@
-package com.john.doe.test.service.impl;
+package com.john.doe.mini.test.service.impl;
 
-import com.john.doe.test.service.AService;
+import com.john.doe.mini.test.service.AService;
 
 /**
  * Created by JOHN_DOE on 2023/5/6.
@@ -8,6 +8,6 @@ import com.john.doe.test.service.AService;
 public class AServiceImpl implements AService {
     @Override
     public void sayHello() {
-        System.out.println("hello");
+        System.out.println("hello~~");
     }
 }
