@@ -1,26 +1,27 @@
 package com.john.doe.mini.beans;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by JOHN_DOE on 2023/5/7.
  */
 public class ConstructorArgumentValues {
-    private final Map<Integer, ConstructorArgumentValue> indexedConstructorArgumentValues = new HashMap<>(0);
 
-    private final List<ConstructorArgumentValue> genericConstructorArgumentValues = new LinkedList<>();
-
-    public boolean hasIndexedConstructorArgumentValue(int index) {
-        return indexedConstructorArgumentValues.containsKey(index);
-    }
+    private final List<ConstructorArgumentValue> genericConstructorArgumentValues = new ArrayList<>();
 
     public ConstructorArgumentValue getIndexedConstructorArgumentValue(int index) {
-        return indexedConstructorArgumentValues.get(index);
+        if (index < 0 || index >= genericConstructorArgumentValues.size()) {
+            return null;
+        }
+        return genericConstructorArgumentValues.get(index);
+    }
+
+    public void addConstructorArgumentValue(ConstructorArgumentValue constructorArgumentValue) {
+        genericConstructorArgumentValues.add(constructorArgumentValue);
     }
 
     public void addGenericArgumentValue(String type, Object value) {
@@ -46,14 +47,10 @@ public class ConstructorArgumentValues {
     }
 
     private void addGenericArgumentValue(ConstructorArgumentValue newValue) {
-        if (Objects.nonNull(newValue.getName())) {
+        if (newValue.getName() != null) {
             genericConstructorArgumentValues.removeIf(currentValue -> newValue.getName().equals(currentValue.getName()));
             genericConstructorArgumentValues.add(newValue);
         }
-    }
-
-    private void addConstructorArgumentValue(Integer key, ConstructorArgumentValue newValue) {
-        indexedConstructorArgumentValues.put(key, newValue);
     }
 
 
