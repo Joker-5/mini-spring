@@ -1,4 +1,4 @@
-package com.john.doe.mini.beans.factory;
+package com.john.doe.mini.beans.factory.config;
 
 /**
  * Created by JOHN_DOE on 2023/5/6.
@@ -11,4 +11,6 @@ public interface SingletonBeanRegistry {
     boolean containsSingleton(String beanName);
     
     String[] getSingletonNames();
+    
+    void removeSingleton(String beanName);
 }

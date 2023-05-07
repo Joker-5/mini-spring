@@ -1,5 +1,7 @@
 package com.john.doe.mini.beans.factory;
 
+import com.john.doe.mini.beans.factory.config.SingletonBeanRegistry;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,5 +35,13 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     @Override
     public String[] getSingletonNames() {
         return this.beanNames.toArray(new String[0]);
+    }
+
+    @Override
+    public void removeSingleton(String beanName) {
+        synchronized (singletons) {
+            beanNames.remove(beanName);
+            singletons.remove(beanName);
+        }
     }
 }

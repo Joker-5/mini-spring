@@ -1,6 +1,7 @@
 package com.john.doe.mini.context;
 
-import com.john.doe.mini.beans.*;
+import com.john.doe.mini.beans.BeansException;
+import com.john.doe.mini.beans.XmlBeanDefinitionReader;
 import com.john.doe.mini.beans.factory.BeanFactory;
 import com.john.doe.mini.beans.factory.SimpleBeanFactory;
 import com.john.doe.mini.core.ClassPathXmlResource;
@@ -9,7 +10,7 @@ import com.john.doe.mini.core.Resource;
 /**
  * Created by JOHN_DOE on 2023/5/6.
  */
-public class ClasspathXmlApplicationContext implements BeanFactory {
+public class ClasspathXmlApplicationContext implements BeanFactory, ApplicationEventPublisher {
     private SimpleBeanFactory beanFactory;
 
     public ClasspathXmlApplicationContext(String fileName) {
@@ -28,14 +29,28 @@ public class ClasspathXmlApplicationContext implements BeanFactory {
     }
 
     @Override
-    public Boolean containsBean(String name) {
+    public boolean containsBean(String name) {
         return beanFactory.containsBean(name);
     }
 
     @Override
-    public void registerBean(String beanName, Object obj) {
-        beanFactory.registerBean(beanName, obj);
+    public boolean isSingleton(String name) {
+        return beanFactory.isSingleton(name);
+    }
+
+    @Override
+    public boolean isPrototype(String name) {
+        return beanFactory.isPrototype(name);
+    }
+
+    @Override
+    public Class<?> getType(String name) {
+        return beanFactory.getType(name);
     }
 
 
+    @Override
+    public void publishEvent(ApplicationEvent event) {
+        // TODO
+    }
 }

@@ -1,6 +1,5 @@
 package com.john.doe.mini.beans.factory;
 
-import com.john.doe.mini.beans.BeanDefinition;
 import com.john.doe.mini.beans.BeansException;
 
 /**
@@ -8,8 +7,13 @@ import com.john.doe.mini.beans.BeansException;
  */
 public interface BeanFactory {
     Object getBean(String beanName) throws BeansException;
-    
-    Boolean containsBean(String name);
-    
-    void registerBean(String beanName,Object obj);
+
+    boolean containsBean(String name);
+
+    boolean isSingleton(String name);
+
+    boolean isPrototype(String name);
+
+    Class<?> getType(String name);
+
 }

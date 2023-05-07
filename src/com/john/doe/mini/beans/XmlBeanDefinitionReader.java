@@ -1,7 +1,7 @@
 package com.john.doe.mini.beans;
 
-import com.john.doe.mini.beans.factory.BeanFactory;
 import com.john.doe.mini.beans.factory.SimpleBeanFactory;
+import com.john.doe.mini.beans.factory.config.BeanDefinition;
 import com.john.doe.mini.core.Resource;
 import org.dom4j.Element;
 
@@ -23,7 +23,7 @@ public class XmlBeanDefinitionReader {
             String beanClassName = element.attributeValue("class");
             BeanDefinition beanDefinition = new BeanDefinition(beanId, beanClassName);
 
-            simpleBeanFactory.registerBeanDefinition(beanDefinition);
+            simpleBeanFactory.registerBeanDefinition(beanId, beanDefinition);
         }
     }
 }
