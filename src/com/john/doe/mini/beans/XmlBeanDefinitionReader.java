@@ -1,5 +1,7 @@
 package com.john.doe.mini.beans;
 
+import com.john.doe.mini.beans.factory.BeanFactory;
+import com.john.doe.mini.beans.factory.SimpleBeanFactory;
 import com.john.doe.mini.core.Resource;
 import org.dom4j.Element;
 
@@ -7,10 +9,10 @@ import org.dom4j.Element;
  * Created by JOHN_DOE on 2023/5/6.
  */
 public class XmlBeanDefinitionReader {
-    private BeanFactory beanFactory;
+    private SimpleBeanFactory simpleBeanFactory;
 
-    public XmlBeanDefinitionReader(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
+    public XmlBeanDefinitionReader(SimpleBeanFactory simpleBeanFactory) {
+        this.simpleBeanFactory = simpleBeanFactory;
     }
 
     public void loadBeanDefinitions(Resource resource) {
@@ -21,7 +23,7 @@ public class XmlBeanDefinitionReader {
             String beanClassName = element.attributeValue("class");
             BeanDefinition beanDefinition = new BeanDefinition(beanId, beanClassName);
 
-            beanFactory.registerBeanDefinition(beanDefinition);
+            simpleBeanFactory.registerBeanDefinition(beanDefinition);
         }
     }
 }
