@@ -4,20 +4,29 @@ import com.john.doe.mini.beans.factory.SimpleBeanFactory;
 import com.john.doe.mini.beans.factory.config.BeanDefinition;
 import com.john.doe.mini.core.Resource;
 import com.john.doe.mini.core.XmlResourceConstant;
+import com.john.doe.mini.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by JOHN_DOE on 2023/5/6.
  */
+@Slf4j
 public class XmlBeanDefinitionReader {
-    private SimpleBeanFactory simpleBeanFactory;
+    private SimpleBeanFactory bf;
 
-    public XmlBeanDefinitionReader(SimpleBeanFactory simpleBeanFactory) {
-        this.simpleBeanFactory = simpleBeanFactory;
+    public XmlBeanDefinitionReader(SimpleBeanFactory bf) {
+        this.bf = bf;
     }
 
+    /**
+     * load bean definitions from xml
+     *
+     * @param resource
+     */
     public void loadBeanDefinitions(Resource resource) {
         while (resource.hasNext()) {
             Element element = (Element) resource.next();
@@ -25,18 +34,6 @@ public class XmlBeanDefinitionReader {
             String beanId = element.attributeValue(XmlResourceConstant.ID);
             String beanClassName = element.attributeValue(XmlResourceConstant.CLASS);
             BeanDefinition bd = new BeanDefinition(beanId, beanClassName);
-
-            // resolve property tag
-            List<Element> propertyElements = element.elements(XmlResourceConstant.PROPERTY);
-            PropertyValues pvs = new PropertyValues();
-            for (Element propertyElement : propertyElements) {
-                String type = propertyElement.attributeValue(XmlResourceConstant.TYPE);
-                String name = propertyElement.attributeValue(XmlResourceConstant.NAME);
-                String value = propertyElement.attributeValue(XmlResourceConstant.VALUE);
-
-                pvs.addPropertyValue(new PropertyValue(type, name, value));
-            }
-            bd.setPropertyValues(pvs);
 
             // resolve constructor-arg tag
             List<Element> constructorElements = element.elements(XmlResourceConstant.CONSTRUCTOR_ARG);
@@ -47,11 +44,35 @@ public class XmlBeanDefinitionReader {
                 String value = constructorElement.attributeValue(XmlResourceConstant.VALUE);
 
                 avs.addConstructorArgumentValue(new ConstructorArgumentValue(type, name, value));
-                System.out.println(String.format("resolve constructor args, type: [%s], name: [%s], value: [%s]", type, name, value));
             }
             bd.setConstructorArgumentValues(avs);
 
-            simpleBeanFactory.registerBeanDefinition(beanId, bd);
+            // resolve property tag
+            List<Element> propertyElements = element.elements(XmlResourceConstant.PROPERTY);
+            PropertyValues pvs = new PropertyValues();
+            List<String> refs = new ArrayList<>();
+            for (Element propertyElement : propertyElements) {
+                String type = propertyElement.attributeValue(XmlResourceConstant.TYPE);
+                String name = propertyElement.attributeValue(XmlResourceConstant.NAME);
+                String value = propertyElement.attributeValue(XmlResourceConstant.VALUE);
+                String ref = propertyElement.attributeValue(XmlResourceConstant.REF);
+
+                boolean isRef = false;
+                String pv = "";
+                if (!StringUtils.isEmpty(value)) {// bean value in value attr
+                    pv = value;
+                } else if (!StringUtils.isEmpty(ref)) {// bean value in ref attr
+                    isRef = true;
+                    pv = ref;
+                    refs.add(ref);
+                }
+                pvs.addPropertyValue(new PropertyValue(type, name, pv, isRef));
+            }
+            bd.setPropertyValues(pvs);
+            bd.setDependsOn(refs.toArray(new String[0]));
+
+            log.info("register beanDefinition, beanId: {}", beanId);
+            bf.registerBeanDefinition(beanId, bd);
         }
     }
 }

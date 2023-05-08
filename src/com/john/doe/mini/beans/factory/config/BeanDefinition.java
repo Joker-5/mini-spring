@@ -4,6 +4,8 @@ import com.john.doe.mini.beans.BeanScopeEnum;
 import com.john.doe.mini.beans.ConstructorArgumentValues;
 import com.john.doe.mini.beans.PropertyValues;
 
+import java.util.Arrays;
+
 /**
  * Created by JOHN_DOE on 2023/5/6.
  */
@@ -99,5 +101,19 @@ public class BeanDefinition {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+    @Override
+    public String toString() {
+        return "BeanDefinition{" +
+                "lazyInit=" + lazyInit +
+                ", dependsOn=" + Arrays.toString(dependsOn) +
+                ", constructorArgumentValues=" + constructorArgumentValues +
+                ", propertyValues=" + propertyValues +
+                ", beanClass=" + beanClass +
+                ", id='" + id + '\'' +
+                ", className='" + className + '\'' +
+                ", scope='" + scope + '\'' +
+                '}';
     }
 }

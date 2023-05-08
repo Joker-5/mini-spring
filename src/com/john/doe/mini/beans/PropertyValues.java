@@ -25,9 +25,10 @@ public class PropertyValues {
         propertyValueList.add(pv);
     }
 
-    public void addPropertyValue(String propertyName, Object propertyValue) {
-        addPropertyValue(new PropertyValue(propertyName, propertyValue));
-    }
+    // TODO
+//    public void addPropertyValue(String propertyName, Object propertyValue) {
+//        addPropertyValue(new PropertyValue(propertyName, propertyValue));
+//    }
 
     public void removePropertyValue(PropertyValue pv) {
         propertyValueList.remove(pv);
