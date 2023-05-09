@@ -14,6 +14,7 @@ public class TestMain {
 
         AService aService = (AService) ctx.getBean("aservice");
         aService.sayHello();
+        
 //        CService cService = (CService) ctx.getBean("cservice");
 //        cService.sayHello();
     }

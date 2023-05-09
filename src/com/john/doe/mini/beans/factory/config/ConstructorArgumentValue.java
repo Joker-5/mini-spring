@@ -1,4 +1,4 @@
-package com.john.doe.mini.beans;
+package com.john.doe.mini.beans.factory.config;
 
 /**
  * Created by JOHN_DOE on 2023/5/7.

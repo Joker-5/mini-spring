@@ -1,4 +1,6 @@
-package com.john.doe.mini.beans.factory.config;
+package com.john.doe.mini.beans.factory.support;
+
+import com.john.doe.mini.beans.factory.config.BeanDefinition;
 
 /**
  * Created by JOHN_DOE on 2023/5/7.

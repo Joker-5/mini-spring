@@ -1,4 +1,4 @@
-package com.john.doe.mini.beans.factory;
+package com.john.doe.mini.beans.factory.support;
 
 import com.john.doe.mini.beans.factory.config.SingletonBeanRegistry;
 

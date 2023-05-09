@@ -1,6 +1,10 @@
-package com.john.doe.mini.beans;
+package com.john.doe.mini.beans.factory.xml;
 
-import com.john.doe.mini.beans.factory.SimpleBeanFactory;
+import com.john.doe.mini.beans.factory.config.ConstructorArgumentValue;
+import com.john.doe.mini.beans.factory.config.ConstructorArgumentValues;
+import com.john.doe.mini.beans.factory.PropertyValue;
+import com.john.doe.mini.beans.factory.PropertyValues;
+import com.john.doe.mini.beans.factory.support.AbstractBeanFactory;
 import com.john.doe.mini.beans.factory.config.BeanDefinition;
 import com.john.doe.mini.core.Resource;
 import com.john.doe.mini.core.XmlResourceConstant;
@@ -16,10 +20,10 @@ import java.util.List;
  */
 @Slf4j
 public class XmlBeanDefinitionReader {
-    private SimpleBeanFactory bf;
+    private AbstractBeanFactory beanFactory;
 
-    public XmlBeanDefinitionReader(SimpleBeanFactory bf) {
-        this.bf = bf;
+    public XmlBeanDefinitionReader(AbstractBeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
     /**
@@ -70,9 +74,8 @@ public class XmlBeanDefinitionReader {
             }
             bd.setPropertyValues(pvs);
             bd.setDependsOn(refs.toArray(new String[0]));
-
-            log.info("register beanDefinition, beanId: {}", beanId);
-            bf.registerBeanDefinition(beanId, bd);
+            
+            beanFactory.registerBeanDefinition(beanId, bd);
         }
     }
 }

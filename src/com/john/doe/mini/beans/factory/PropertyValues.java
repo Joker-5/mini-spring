@@ -1,4 +1,4 @@
-package com.john.doe.mini.beans;
+package com.john.doe.mini.beans.factory;
 
 import java.util.ArrayList;
 import java.util.List;

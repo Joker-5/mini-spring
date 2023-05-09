@@ -1,8 +1,7 @@
 package com.john.doe.mini.beans.factory.config;
 
 import com.john.doe.mini.beans.BeanScopeEnum;
-import com.john.doe.mini.beans.ConstructorArgumentValues;
-import com.john.doe.mini.beans.PropertyValues;
+import com.john.doe.mini.beans.factory.PropertyValues;
 
 import java.util.Arrays;
 
@@ -24,11 +23,21 @@ public class BeanDefinition {
 
     private String className;
 
+    private String initMethodName;
+
     private String scope = BeanScopeEnum.SINGLETON.getName();
 
     public BeanDefinition(String id, String className) {
         this.id = id;
         this.className = className;
+    }
+
+    public String getInitMethodName() {
+        return initMethodName;
+    }
+
+    public void setInitMethodName(String initMethodName) {
+        this.initMethodName = initMethodName;
     }
 
     public boolean isSingleton() {

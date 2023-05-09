@@ -1,10 +1,8 @@
-package com.john.doe.mini.beans;
+package com.john.doe.mini.beans.factory.config;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by JOHN_DOE on 2023/5/7.
