@@ -1,7 +1,8 @@
 package com.john.doe.mini.beans.factory.annotation;
 
 import com.john.doe.mini.beans.BeansException;
-import com.john.doe.mini.beans.factory.config.AutowiredCapableBeanFactory;
+import com.john.doe.mini.beans.factory.BeanFactory;
+import com.john.doe.mini.beans.factory.config.AutowireCapableBeanFactory;
 import com.john.doe.mini.beans.factory.config.BeanPostProcessor;
 import com.john.doe.mini.util.ArrayUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import java.lang.reflect.Field;
  */
 @Slf4j
 public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
-    private AutowiredCapableBeanFactory beanFactory;
+    private BeanFactory beanFactory;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -47,11 +48,16 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
         return null;
     }
 
-    public AutowiredCapableBeanFactory getBeanFactory() {
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+    }
+
+    public BeanFactory getBeanFactory() {
         return beanFactory;
     }
 
-    public void setBeanFactory(AutowiredCapableBeanFactory beanFactory) {
+    public void setBeanFactory(AutowireCapableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 }

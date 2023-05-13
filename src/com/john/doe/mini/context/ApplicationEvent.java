@@ -7,8 +7,11 @@ import java.util.EventObject;
  */
 public class ApplicationEvent extends EventObject {
     public static final long serialVersionUID = 1L;
+    
+    protected String msg = null;
 
     public ApplicationEvent(Object args0) {
         super(args0);
+        this.msg = args0.toString();
     }
 }

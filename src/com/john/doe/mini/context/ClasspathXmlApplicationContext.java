@@ -2,12 +2,11 @@ package com.john.doe.mini.context;
 
 import com.john.doe.mini.beans.BeansException;
 import com.john.doe.mini.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
-import com.john.doe.mini.beans.factory.config.AutowiredCapableBeanFactory;
 import com.john.doe.mini.beans.factory.config.BeanFactoryPostProcessor;
+import com.john.doe.mini.beans.factory.config.ConfigurableListableBeanFactory;
+import com.john.doe.mini.beans.factory.support.DefaultListableBeanFactory;
 import com.john.doe.mini.beans.factory.xml.XmlBeanDefinitionReader;
-import com.john.doe.mini.beans.factory.BeanFactory;
 import com.john.doe.mini.core.ClassPathXmlResource;
-import com.john.doe.mini.core.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +14,8 @@ import java.util.List;
 /**
  * Created by JOHN_DOE on 2023/5/6.
  */
-public class ClasspathXmlApplicationContext implements BeanFactory, ApplicationEventPublisher {
-    private final AutowiredCapableBeanFactory beanFactory;
+public class ClasspathXmlApplicationContext extends AbstractApplicationContext {
+    DefaultListableBeanFactory beanFactory;
 
     private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
 
@@ -25,64 +24,67 @@ public class ClasspathXmlApplicationContext implements BeanFactory, ApplicationE
     }
 
     public ClasspathXmlApplicationContext(String fileName, boolean isRefresh) {
-        // load resource from xml file
-        Resource resource = new ClassPathXmlResource(fileName);
-        this.beanFactory = new AutowiredCapableBeanFactory();
+        beanFactory = new DefaultListableBeanFactory();
 
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
-        // load bean definitions from resource
+        ClassPathXmlResource resource = new ClassPathXmlResource(fileName);
         reader.loadBeanDefinitions(resource);
         if (isRefresh) {
-            refresh();
+            try {
+                refresh();
+            } catch (BeansException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public void refresh() {
-        registerBeanPostProcessors(beanFactory);
-        onRefresh();
+    public void addBeanFactoryPostProcessor(BeanFactoryPostProcessor postProcessor) {
+        beanFactoryPostProcessors.add(postProcessor);
     }
 
-    public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
-        return beanFactoryPostProcessors;
+    @Override
+    void registerListeners() {
+        ApplicationListener listener = new ApplicationListener();
+        getApplicationEventPublisher().addApplicationListener(listener);
     }
 
-    private void registerBeanPostProcessors(AutowiredCapableBeanFactory beanFactory) {
+    @Override
+    void initApplicationEventPublisher() {
+        setApplicationEventPublisher(new SimpleApplicationEventPublisher());
+    }
+
+    @Override
+    void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+
+    }
+
+    @Override
+    void registerBeanProcessors(ConfigurableListableBeanFactory beanFactory) {
         beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
     }
 
-    private void onRefresh() {
+    @Override
+    void onRefresh() {
         beanFactory.refresh();
     }
 
-
     @Override
-    public Object getBean(String beanName) throws BeansException {
-        return this.beanFactory.getBean(beanName);
+    void finishRefresh() {
+        publishEvent(new ContextRefreshEvent("Context refreshed already."));
     }
 
     @Override
-    public boolean containsBean(String name) {
-        return beanFactory.containsBean(name);
+    public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
+        return beanFactory;
     }
-
-    @Override
-    public boolean isSingleton(String name) {
-        return beanFactory.isSingleton(name);
-    }
-
-    @Override
-    public boolean isPrototype(String name) {
-        return beanFactory.isPrototype(name);
-    }
-
-    @Override
-    public Class<?> getType(String name) {
-        return beanFactory.getType(name);
-    }
-
 
     @Override
     public void publishEvent(ApplicationEvent event) {
-        // TODO
+        getApplicationEventPublisher().publishEvent(event);
+    }
+
+    @Override
+    public void addApplicationListener(ApplicationListener listener) {
+        getApplicationEventPublisher().addApplicationListener(listener);
     }
 }

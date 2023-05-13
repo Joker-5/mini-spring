@@ -1,19 +1,18 @@
 package com.john.doe.mini.beans.factory.config;
 
 import com.john.doe.mini.beans.BeansException;
-import com.john.doe.mini.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import com.john.doe.mini.beans.factory.support.AbstractBeanFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by JOHN_DOE on 2023/5/8.
+ * Created by JOHN_DOE on 2023/5/10.
  */
-public class AutowiredCapableBeanFactory extends AbstractBeanFactory {
-    private List<AutowiredAnnotationBeanPostProcessor> beanPostProcessors = new ArrayList<>();
+public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
+    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
-    public void addBeanPostProcessor(AutowiredAnnotationBeanPostProcessor beanPostProcessor) {
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
         beanPostProcessors.remove(beanPostProcessor);
         beanPostProcessors.add(beanPostProcessor);
     }
@@ -22,17 +21,17 @@ public class AutowiredCapableBeanFactory extends AbstractBeanFactory {
         return beanPostProcessors.size();
     }
 
-    public List<AutowiredAnnotationBeanPostProcessor> getBeanPostProcessors() {
+    public List<BeanPostProcessor> getBeanPostProcessors() {
         return beanPostProcessors;
     }
-
 
     @Override
     public Object applyBeanPostProcessorsBeforeInitialization(Object bean, String beanName) throws BeansException {
         Object result = bean;
-        for (AutowiredAnnotationBeanPostProcessor beanPostProcessor : beanPostProcessors) {
+
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             beanPostProcessor.setBeanFactory(this);
-            beanPostProcessor.postProcessBeforeInitialization(result, beanName);
+            result = beanPostProcessor.postProcessBeforeInitialization(result, beanName);
             if (result == null) {
                 return result;
             }
@@ -43,9 +42,10 @@ public class AutowiredCapableBeanFactory extends AbstractBeanFactory {
     @Override
     public Object applyBeanPostProcessorsAfterInitialization(Object bean, String beanName) throws BeansException {
         Object result = bean;
-        for (AutowiredAnnotationBeanPostProcessor beanPostProcessor : beanPostProcessors) {
+
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             beanPostProcessor.setBeanFactory(this);
-            beanPostProcessor.postProcessAfterInitialization(result, beanName);
+            result = beanPostProcessor.postProcessAfterInitialization(result, beanName);
             if (result == null) {
                 return result;
             }

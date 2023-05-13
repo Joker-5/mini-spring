@@ -3,7 +3,10 @@ package com.john.doe.mini.beans.factory.support;
 import com.john.doe.mini.beans.factory.config.SingletonBeanRegistry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -12,7 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected List<String> beanNames = new ArrayList<>();
 
-    protected ConcurrentHashMap<String, Object> singletons = new ConcurrentHashMap<>(256);
+    protected Map<String, Object> singletons = new ConcurrentHashMap<>(256);
+
+    protected Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
+
+    protected Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<>(64);
 
     @Override
     public void registerSingleton(String beanName, Object singletonObject) {
@@ -43,5 +50,40 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
             beanNames.remove(beanName);
             singletons.remove(beanName);
         }
+    }
+
+    public void registerDependentBean(String beanName, String dependentBeanName) {
+        Set<String> dependentBeans = dependentBeanMap.get(beanName);
+        if (dependentBeans != null && dependentBeans.contains(beanName)) {
+            return;
+        }
+
+        synchronized (dependentBeanMap) {
+            dependentBeans = dependentBeanMap.computeIfAbsent(beanName, k -> new HashSet<>());
+            dependentBeans.add(dependentBeanName);
+        }
+        synchronized (dependenciesForBeanMap) {
+            Set<String> dependenciesForBean = dependenciesForBeanMap.computeIfAbsent(dependentBeanName, k -> new HashSet<>());
+            dependenciesForBean.add(beanName);
+        }
+    }
+
+    public String[] getDependentBeans(String beanName) {
+        Set<String> dependentBeans = dependentBeanMap.get(beanName);
+
+        if (dependentBeans == null) {
+            return new String[0];
+        }
+        return dependentBeans.toArray(new String[0]);
+    }
+
+    public String[] getDependenciesForBean(String beanName) {
+        Set<String> dependenciesForBean = dependenciesForBeanMap.get(beanName);
+
+        if (dependenciesForBean == null) {
+            return new String[0];
+        }
+        return dependenciesForBean.toArray(new String[0]);
+
     }
 }

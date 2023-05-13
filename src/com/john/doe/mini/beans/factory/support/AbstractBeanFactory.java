@@ -1,10 +1,10 @@
 package com.john.doe.mini.beans.factory.support;
 
 import com.john.doe.mini.beans.BeansException;
-import com.john.doe.mini.beans.factory.BeanFactory;
 import com.john.doe.mini.beans.factory.PropertyValue;
 import com.john.doe.mini.beans.factory.PropertyValues;
 import com.john.doe.mini.beans.factory.config.BeanDefinition;
+import com.john.doe.mini.beans.factory.config.ConfigurableBeanFactory;
 import com.john.doe.mini.beans.factory.config.ConstructorArgumentValue;
 import com.john.doe.mini.beans.factory.config.ConstructorArgumentValues;
 import com.john.doe.mini.util.StringUtils;
@@ -23,10 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by JOHN_DOE on 2023/5/8.
  */
 @Slf4j
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory, BeanDefinitionRegistry {
-    private final List<String> beanDefinitionNames = new ArrayList<>();
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory, BeanDefinitionRegistry {
+    protected final List<String> beanDefinitionNames = new ArrayList<>();
 
-    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
+    protected final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
     private final Map<String, Object> earlySingletonObjects = new HashMap<>();
 

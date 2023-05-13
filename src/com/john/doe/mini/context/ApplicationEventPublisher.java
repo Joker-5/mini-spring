@@ -6,7 +6,10 @@ package com.john.doe.mini.context;
 public interface ApplicationEventPublisher {
     /**
      * publish container event
+     *
      * @param event
      */
     void publishEvent(ApplicationEvent event);
+
+    void addApplicationListener(ApplicationListener listener);
 }
