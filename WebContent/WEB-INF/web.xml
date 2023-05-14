@@ -3,6 +3,17 @@
          xmlns:web="http://xmlns.jcp.org/xml/ns/javaee"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID">
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>applicationContext.xml</param-value>
+    </context-param>
+    
+    <listener>
+        <listener-class>
+            com.john.doe.mini.web.ContextLoaderListener
+        </listener-class>
+    </listener>
+    
     <servlet>
         <servlet-name>miniMVC</servlet-name>
         <servlet-class>com.john.doe.mini.web.DispatcherServlet</servlet-class>
@@ -12,7 +23,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID">
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>miniMVC</servlet-name>
         <url-pattern>/</url-pattern>

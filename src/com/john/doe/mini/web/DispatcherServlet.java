@@ -1,10 +1,13 @@
 package com.john.doe.mini.web;
 
+import com.john.doe.mini.beans.BeansException;
+import com.john.doe.mini.beans.factory.annotation.Autowired;
 import com.john.doe.mini.util.ArrayUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -26,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Slf4j
 public class DispatcherServlet extends HttpServlet {
+    private WebApplicationContext webApplicationContext;
     // URL from @RequestMapping annotation
     private List<String> urlMappingNames = new ArrayList<>();
 
@@ -50,7 +54,8 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-
+        // get webApplicationContext which creates in listener from servletContext
+        webApplicationContext = (WebApplicationContext) getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
         String contextConfigLocation = config.getInitParameter(WebConstant.CONTEXT_CONFIG_LOCATION);
         URL xmlPath = null;
 
@@ -82,12 +87,36 @@ public class DispatcherServlet extends HttpServlet {
             try {
                 clazz = Class.forName(controllerName);
                 obj = clazz.newInstance();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                populateBean(obj, controllerName);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | BeansException e) {
                 e.printStackTrace();
             }
+
             controllerClasses.put(controllerName, clazz);
             ControllerObjects.put(controllerName, obj);
         }
+    }
+
+    protected Object populateBean(Object bean, String beanName) throws BeansException {
+        Class<?> clazz = bean.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+
+        if (!ArrayUtils.isEmpty(fields)) {
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(Autowired.class)) {
+                    String fieldName = field.getName();
+                    Object autowiredObj = webApplicationContext.getBean(fieldName);
+                    field.setAccessible(true);
+                    try {
+                        field.set(bean, autowiredObj);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        log.info("populate bean success, bean name: {}", beanName);
+        return bean;
     }
 
     private List<String> scanPackages(List<String> packageNames) {

@@ -7,6 +7,7 @@ import com.john.doe.mini.beans.factory.config.ConfigurableListableBeanFactory;
 import com.john.doe.mini.beans.factory.support.DefaultListableBeanFactory;
 import com.john.doe.mini.beans.factory.xml.XmlBeanDefinitionReader;
 import com.john.doe.mini.core.ClassPathXmlResource;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 /**
  * Created by JOHN_DOE on 2023/5/6.
  */
+@Slf4j
 public class ClasspathXmlApplicationContext extends AbstractApplicationContext {
     DefaultListableBeanFactory beanFactory;
 
@@ -24,6 +26,7 @@ public class ClasspathXmlApplicationContext extends AbstractApplicationContext {
     }
 
     public ClasspathXmlApplicationContext(String fileName, boolean isRefresh) {
+        log.info("load resource from file: {}", fileName);
         beanFactory = new DefaultListableBeanFactory();
 
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
