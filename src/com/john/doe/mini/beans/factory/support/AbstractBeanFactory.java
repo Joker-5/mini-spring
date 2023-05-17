@@ -56,7 +56,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             singleton = earlySingletonObjects.get(beanName);
             if (singleton == null) {
                 BeanDefinition bd = beanDefinitionMap.get(beanName);
+                if (bd == null) {
+                    throw new BeansException(String.format("bean [{%s}] BeanDefinition is null", beanName));
+                }
                 // bean not exist, try to create it
+                log.info("singleton [{}] not exist, try to create it", beanName);
                 singleton = createBean(bd);
                 registerSingleton(beanName, singleton);
                 // postProcessBeforeInitialization
@@ -81,7 +85,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     public void registerBeanDefinition(String beanName, BeanDefinition bd) {
         beanDefinitionMap.put(beanName, bd);
         beanDefinitionNames.add(beanName);
-        log.info("register beanDefinition, beanName: [{}], bd:\n {}", beanName, bd);
+        log.info("register beanDefinition, beanName: [{}]", beanName);
     }
 
     @Override
@@ -135,6 +139,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
         // populate properties for bean
         populateBean(bd, clazz, obj);
+        log.info("bean [{}] create success", bd.getId());
         return obj;
     }
 
@@ -170,7 +175,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
         // resolve constructor args
         ConstructorArgumentValues avs = bd.getConstructorArgumentValues();
-        if (!avs.isEmpty()) {
+        if (avs != null && !avs.isEmpty()) {
             Class<?>[] paramTypes = new Class<?>[avs.getConstructorArgumentCount()];
             Object[] paramValues = new Object[avs.getConstructorArgumentCount()];
 
@@ -223,7 +228,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         // resolve setter args
         PropertyValues pvs = bd.getPropertyValues();
 
-        if (!pvs.isEmpty()) {
+        if (pvs != null && !pvs.isEmpty()) {
             for (PropertyValue pv : pvs.getPropertyValueList()) {
                 String pName = pv.getName();
                 String pType = pv.getType();

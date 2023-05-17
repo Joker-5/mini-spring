@@ -27,17 +27,17 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     private final AtomicBoolean closed = new AtomicBoolean();
 
-    abstract void registerListeners();
+    public abstract void registerListeners();
 
-    abstract void initApplicationEventPublisher();
+    public abstract void initApplicationEventPublisher();
 
-    abstract void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory);
+    public abstract void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory);
 
-    abstract void registerBeanProcessors(ConfigurableListableBeanFactory beanFactory);
+    public abstract void registerBeanProcessors(ConfigurableListableBeanFactory beanFactory);
 
-    abstract void onRefresh();
+    public abstract void onRefresh();
 
-    abstract void finishRefresh();
+    public abstract void finishRefresh();
 
     @Override
     public abstract ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;

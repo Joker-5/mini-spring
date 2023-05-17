@@ -1,11 +1,10 @@
-package com.john.doe.mini.test;
+package com.john.doe.mini.test.web.service;
+
 
 import com.john.doe.mini.web.RequestMapping;
 
-/**
- * Created by JOHN_DOE on 2023/5/13.
- */
-public class MVCBean {
+public class HelloWorldBean {
+
     @RequestMapping("/test1")
     public String doTest1() {
         return "test 1, hello world!";

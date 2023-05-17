@@ -46,33 +46,33 @@ public class ClasspathXmlApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
-    void registerListeners() {
+    public void registerListeners() {
         ApplicationListener listener = new ApplicationListener();
         getApplicationEventPublisher().addApplicationListener(listener);
     }
 
     @Override
-    void initApplicationEventPublisher() {
+    public void initApplicationEventPublisher() {
         setApplicationEventPublisher(new SimpleApplicationEventPublisher());
     }
 
     @Override
-    void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 
     }
 
     @Override
-    void registerBeanProcessors(ConfigurableListableBeanFactory beanFactory) {
+    public void registerBeanProcessors(ConfigurableListableBeanFactory beanFactory) {
         beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
     }
 
     @Override
-    void onRefresh() {
+    public void onRefresh() {
         beanFactory.refresh();
     }
 
     @Override
-    void finishRefresh() {
+    public void finishRefresh() {
         publishEvent(new ContextRefreshEvent("Context refreshed already."));
     }
 

@@ -14,6 +14,8 @@ import java.util.Map;
  * Created by JOHN_DOE on 2023/5/10.
  */
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements ConfigurableListableBeanFactory {
+    private ConfigurableListableBeanFactory parentBeanFactory;
+
     @Override
     public int getBeanDefinitionCount() {
         return beanDefinitionMap.size();
@@ -48,5 +50,23 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             result.put(beanName, (T) beanInstance);
         }
         return result;
+    }
+
+    public ConfigurableListableBeanFactory getParentBeanFactory() {
+        return parentBeanFactory;
+    }
+
+    public void setParentBeanFactory(ConfigurableListableBeanFactory parentBeanFactory) {
+        this.parentBeanFactory = parentBeanFactory;
+    }
+
+    @Override
+    public Object getBean(String beanName) throws BeansException {
+        Object bean = super.getBean(beanName);
+        if (bean == null) {
+            bean = parentBeanFactory.getBean(beanName);
+        }
+
+        return bean;
     }
 }

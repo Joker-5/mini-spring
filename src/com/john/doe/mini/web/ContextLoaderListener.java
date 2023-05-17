@@ -30,7 +30,7 @@ public class ContextLoaderListener implements ServletContextListener {
     private void initWebApplicationContext(ServletContext servletContext) {
         String contextConfigLocation = servletContext.getInitParameter(WebConstant.CONTEXT_CONFIG_LOCATION);
         // start IoC container when servlet server start
-        WebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext(contextConfigLocation);
+        WebApplicationContext webApplicationContext = new XmlWebApplicationContext(contextConfigLocation);
         webApplicationContext.setServletContext(servletContext);
         this.context = webApplicationContext;
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
