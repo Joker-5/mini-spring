@@ -7,8 +7,6 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,15 +50,9 @@ public class XmlScanComponentHelper {
 
     private static List<String> scanPackage(String packageName, Class<?> clazz) {
         List<String> controllerNames = new ArrayList<>();
-        URI uri = null;
+        URL url = clazz.getClassLoader().getResource("/" + packageName.replaceAll("\\.", "/"));
 
-        try {
-            uri = clazz.getResource("/" + packageName.replaceAll("\\.", "/")).toURI();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        File dir = new File(uri);
+        File dir = new File(url.getFile());
         for (File file : dir.listFiles()) {
             if (file.isDirectory()) {
                 // TODO to check
@@ -68,7 +60,7 @@ public class XmlScanComponentHelper {
             } else {
                 String controllerName = packageName + "." + file.getName().replace(".class", "");
                 controllerNames.add(controllerName);
-                log.info("get controller name: {}", controllerName);
+                log.info("scanPackage, get controller name: {}", controllerName);
             }
         }
         return controllerNames;

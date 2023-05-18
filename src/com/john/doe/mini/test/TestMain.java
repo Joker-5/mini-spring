@@ -3,7 +3,7 @@ package com.john.doe.mini.test;
 import com.john.doe.mini.beans.BeansException;
 import com.john.doe.mini.context.ClasspathXmlApplicationContext;
 import com.john.doe.mini.test.service.AService;
-import com.john.doe.mini.test.service.CService;
+
 
 /**
  * Created by JOHN_DOE on 2023/5/6.
@@ -14,7 +14,7 @@ public class TestMain {
 
         AService aService = (AService) ctx.getBean("aservice");
         aService.sayHello();
-        
+
 //        CService cService = (CService) ctx.getBean("cservice");
 //        cService.sayHello();
     }

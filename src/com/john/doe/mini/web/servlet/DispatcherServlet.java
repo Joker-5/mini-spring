@@ -39,6 +39,8 @@ public class DispatcherServlet extends HttpServlet {
 
     private HandlerAdapter handlerAdapter;
 
+    private String contextConfigLocation;
+
     // packages to scan
     private List<String> packageNames = new ArrayList<>();
 
@@ -53,11 +55,12 @@ public class DispatcherServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        // TODO 代码测试RUN Tomcat还有些问题，还需在看下
         super.init(config);
-        String contextConfigLocation = config.getInitParameter(WebConstant.CONTEXT_CONFIG_LOCATION);
         // get parent webApplicationContext which had created in listener from servletContext
         parent = (WebApplicationContext) getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+
+        contextConfigLocation = config.getInitParameter("contextConfigLocation");
+
         wac = new AnnotationConfigWebApplicationContext(contextConfigLocation, parent);
 
         URL xmlPath = null;
@@ -67,6 +70,7 @@ public class DispatcherServlet extends HttpServlet {
             e.printStackTrace();
         }
         packageNames = XmlScanComponentHelper.getNodeValue(xmlPath);
+
         refresh();
     }
 
@@ -92,6 +96,7 @@ public class DispatcherServlet extends HttpServlet {
 
     protected void initController() {
         controllerNames = XmlScanComponentHelper.scanPackages(packageNames, getClass());
+        log.info("DispatcherServlet get controllerNames");
         for (String controllerName : controllerNames) {
             Object obj = null;
             Class<?> clazz = null;

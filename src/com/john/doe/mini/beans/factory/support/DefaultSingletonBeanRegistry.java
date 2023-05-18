@@ -1,6 +1,8 @@
 package com.john.doe.mini.beans.factory.support;
 
 import com.john.doe.mini.beans.factory.config.SingletonBeanRegistry;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by JOHN_DOE on 2023/5/6.
  */
+@Slf4j
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected List<String> beanNames = new ArrayList<>();
 
@@ -23,7 +26,14 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
     @Override
     public void registerSingleton(String beanName, Object singletonObject) {
+//        if (beanName == null) return;
         synchronized (singletons) {
+            Object oldObject = singletons.get(beanName);
+            if (oldObject != null) {
+                throw new IllegalStateException("Could not register object [" + singletonObject +
+                        "] under bean name '" + beanName + "': there is already object [" + oldObject + "] bound");
+            }
+            log.debug("registerSingleton, K -> beanName: {}", beanName);
             this.beanNames.add(beanName);
             this.singletons.put(beanName, singletonObject);
         }

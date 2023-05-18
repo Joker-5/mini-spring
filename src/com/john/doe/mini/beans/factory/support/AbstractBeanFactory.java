@@ -57,12 +57,18 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             if (singleton == null) {
                 BeanDefinition bd = beanDefinitionMap.get(beanName);
                 if (bd == null) {
-                    throw new BeansException(String.format("bean [{%s}] BeanDefinition is null", beanName));
+//                    for (Map.Entry<String, BeanDefinition> b : beanDefinitionMap.entrySet()) {
+//                        log.error("bd is null, try get all beanMaps, beanName: {}", b.getKey());
+//                    }
+                    log.error("bean [{}] BeanDefinition is null", beanName);
+//                    throw new BeansException(String.format("bean [{%s}] BeanDefinition is null", beanName));
+                    return null;
                 }
                 // bean not exist, try to create it
                 log.info("singleton [{}] not exist, try to create it", beanName);
                 singleton = createBean(bd);
-                registerSingleton(beanName, singleton);
+//                registerSingleton(beanName, singleton);
+                registerBean(beanName, singleton);
                 // postProcessBeforeInitialization
                 applyBeanPostProcessorsBeforeInitialization(singleton, beanName);
                 // init-method
@@ -85,7 +91,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     public void registerBeanDefinition(String beanName, BeanDefinition bd) {
         beanDefinitionMap.put(beanName, bd);
         beanDefinitionNames.add(beanName);
-        log.info("register beanDefinition, beanName: [{}]", beanName);
+        log.info("register beanDefinition, beanName: [{}], beanClassName: [{}]", beanName, bd.getClassName());
     }
 
     @Override
@@ -167,59 +173,72 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         Object obj = null;
 
         try {
+            log.debug("doCreateBean get bean class, className: {}", bd.getClassName());
             clazz = Class.forName(bd.getClassName());
-            log.info("doCreateBean get bean class: {}", clazz);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
         // resolve constructor args
         ConstructorArgumentValues avs = bd.getConstructorArgumentValues();
-        if (avs != null && !avs.isEmpty()) {
-            Class<?>[] paramTypes = new Class<?>[avs.getConstructorArgumentCount()];
-            Object[] paramValues = new Object[avs.getConstructorArgumentCount()];
+        if (avs != null) {
+            if (!avs.isEmpty()) {
+                Class<?>[] paramTypes = new Class<?>[avs.getConstructorArgumentCount()];
+                Object[] paramValues = new Object[avs.getConstructorArgumentCount()];
 
-            for (int i = 0; i < avs.getConstructorArgumentCount(); i++) {
-                ConstructorArgumentValue argumentValue = avs.getIndexedConstructorArgumentValue(i);
-                switch (argumentValue.getType()) {
-                    case "String":
-                    case "java.lang.String": {
-                        paramTypes[i] = String.class;
-                        paramValues[i] = argumentValue.getValue();
-                        break;
-                    }
-                    case "Integer":
-                    case "java.lang.Integer": {
-                        paramTypes[i] = Integer.class;
-                        paramValues[i] = Integer.parseInt((String) argumentValue.getValue());
-                        break;
-                    }
-                    case "int": {
-                        paramTypes[i] = int.class;
-                        paramValues[i] = Integer.parseInt((String) argumentValue.getValue());
-                        break;
-                    }
-                    default: { // default String
-                        paramTypes[i] = String.class;
-                        paramValues[i] = (String) argumentValue.getValue();
-                        break;
+                for (int i = 0; i < avs.getConstructorArgumentCount(); i++) {
+                    ConstructorArgumentValue argumentValue = avs.getIndexedConstructorArgumentValue(i);
+                    switch (argumentValue.getType()) {
+                        case "String":
+                        case "java.lang.String": {
+                            paramTypes[i] = String.class;
+                            paramValues[i] = argumentValue.getValue();
+                            break;
+                        }
+                        case "Integer":
+                        case "java.lang.Integer": {
+                            paramTypes[i] = Integer.class;
+                            paramValues[i] = Integer.parseInt((String) argumentValue.getValue());
+                            break;
+                        }
+                        case "int": {
+                            paramTypes[i] = int.class;
+                            paramValues[i] = Integer.parseInt((String) argumentValue.getValue());
+                            break;
+                        }
+                        default: { // default String
+                            paramTypes[i] = String.class;
+                            paramValues[i] = (String) argumentValue.getValue();
+                            break;
+                        }
                     }
                 }
-            }
-            try {
-                ctor = clazz.getConstructor(paramTypes);
-                // instantiate bean
-                obj = ctor.newInstance(paramValues);
-            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+                try {
+                    ctor = clazz.getConstructor(paramTypes);
+                    // instantiate bean
+                    obj = ctor.newInstance(paramValues);
+                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    obj = clazz.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             try {
-                obj = clazz.newInstance();
+                log.debug("ConstructorArgumentValues is null, try to instantiate by class, className: {}", clazz.getName());
+                // TODO: warn, now the framework can not create interfacial bean!
+                if (!clazz.isInterface()) {
+                    obj = clazz.newInstance();
+                }
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
+
         log.info("Bean: [{}] created, className: [{}], obj: [{}]", bd.getId(), bd.getClassName(), obj);
         return obj;
     }

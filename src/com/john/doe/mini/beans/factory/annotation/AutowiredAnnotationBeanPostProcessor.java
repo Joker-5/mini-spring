@@ -26,7 +26,7 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
                 boolean isAutowired = field.isAnnotationPresent(Autowired.class);
                 if (isAutowired) {
                     String fieldName = field.getName();
-                    log.info(fieldName);
+                    log.info("autowired annotation get field name: {}", fieldName);
                     // TODO now just get by fieldName, if fieldName mismatch beanName, there' ll make some mistakes, 
                     //  so next should autowired by type
                     Object autowiredObj = getBeanFactory().getBean(fieldName);
@@ -36,7 +36,7 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    log.info("Autowired [{}] for bean [{}]", field, bean);
+                    log.info("autowired [{}] for bean [{}]", field, bean);
                 }
             }
         }

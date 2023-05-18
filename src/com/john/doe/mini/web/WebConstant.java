@@ -9,8 +9,6 @@ public class WebConstant {
     public static final String CLASS = "class";
 
     public static final String VALUE = "value";
-
-    public static final String CONTEXT_CONFIG_LOCATION = "contextConfigLocation";
-
+    
     public static final String BASE_PACKAGE = "base-package";
 }

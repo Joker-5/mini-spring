@@ -29,7 +29,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
 
     private DefaultListableBeanFactory beanFactory;
 
-    private List<BeanFactoryPostProcessor> beanFactoryPostProcessorList = new ArrayList<>();
+    private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
 
     public AnnotationConfigWebApplicationContext(String fileName) {
         this(fileName, null);
@@ -46,11 +46,12 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
             e.printStackTrace();
         }
         List<String> packageNames = XmlScanComponentHelper.getNodeValue(xmlPath);
-        List<String> controllerNames = XmlScanComponentHelper.scanPackages(packageNames, getClass());
-
+        List<String> controllerNames = XmlScanComponentHelper.scanPackages(packageNames, this.getClass());
+        log.info("AnnotationConfigWebApplicationContext get controllerNames");
         beanFactory = new DefaultListableBeanFactory();
         beanFactory.setParentBeanFactory(parentApplicationContext.getBeanFactory());
         loadBeanDefinitions(controllerNames);
+        log.info("AnnotationConfigWebApplicationContext load beanDefinitions success");
 
         try {
             refresh();
@@ -73,12 +74,9 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
     }
 
     public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessorList() {
-        return beanFactoryPostProcessorList;
+        return beanFactoryPostProcessors;
     }
 
-    public void setBeanFactoryPostProcessorList(List<BeanFactoryPostProcessor> beanFactoryPostProcessorList) {
-        this.beanFactoryPostProcessorList = beanFactoryPostProcessorList;
-    }
 
     @Override
     public ServletContext getServletContext() {
