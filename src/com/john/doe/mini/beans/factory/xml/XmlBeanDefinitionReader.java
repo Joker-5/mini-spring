@@ -63,9 +63,9 @@ public class XmlBeanDefinitionReader {
 
                 boolean isRef = false;
                 String pv = "";
-                if (!StringUtils.isEmpty(value)) {// bean value in value attr
+                if (StringUtils.hasLength(value)) {// bean value in value attr
                     pv = value;
-                } else if (!StringUtils.isEmpty(ref)) {// bean value in ref attr
+                } else if (StringUtils.hasLength(ref)) {// bean value in ref attr
                     isRef = true;
                     pv = ref;
                     refs.add(ref);

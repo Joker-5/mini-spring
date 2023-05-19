@@ -1,12 +1,17 @@
 package com.john.doe.mini.web.servlet;
 
+import com.john.doe.mini.beans.BeansException;
 import com.john.doe.mini.web.WebApplicationContext;
+import com.john.doe.mini.web.WebBindingInitializer;
+import com.john.doe.mini.web.WebDataBinder;
+import com.john.doe.mini.web.WebDataBinderFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 /**
  * Created by JOHN_DOE on 2023/5/17.
@@ -14,8 +19,15 @@ import java.lang.reflect.Method;
 public class RequestMappingHandlerAdapter implements HandlerAdapter {
     private WebApplicationContext wac;
 
+    private WebBindingInitializer webBindingInitializer;
+
     public RequestMappingHandlerAdapter(WebApplicationContext wac) {
         this.wac = wac;
+        try {
+            webBindingInitializer = (WebBindingInitializer) wac.getBean("webBindingInitializer");
+        } catch (BeansException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -24,15 +36,29 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
     }
 
     private void doHandle(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
-        Method method = handler.getMethod();
-        Object bean = handler.getBean();
-        Object result = null;
-
         try {
-            result = method.invoke(bean);
-            response.getWriter().append(result.toString());
-        } catch (IllegalAccessException | InvocationTargetException | IOException e) {
+            invokeHandlerMethod(request, response, handler);
+        } catch (IllegalAccessException | InvocationTargetException | IOException | InstantiationException e) {
             e.printStackTrace();
         }
+    }
+
+    private void invokeHandlerMethod(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException {
+        WebDataBinderFactory binderFactory = new WebDataBinderFactory();
+        Method invocableMethod = handlerMethod.getMethod();
+
+        Parameter[] parameters = invocableMethod.getParameters();
+        Object[] methodParamObjects = new Object[parameters.length];
+        int i = 0;
+
+        for (Parameter parameter : parameters) {
+            Object methodParamObj = parameter.getType().newInstance();
+            WebDataBinder wdb = binderFactory.createBinder(request, methodParamObj, parameter.getName());
+            wdb.bind(request);
+            methodParamObjects[i++] = methodParamObj;
+        }
+
+        Object returnObj = invocableMethod.invoke(handlerMethod.getBean(), methodParamObjects);
+        response.getWriter().append(returnObj.toString());
     }
 }

@@ -148,7 +148,7 @@ public class DispatcherServlet extends HttpServlet {
 
     protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HandlerMethod handlerMethod = handlerMapping.getHandler(request);
-        log.info("in method doDispatch");
+        log.debug("in method doDispatch");
         if (handlerMethod == null) {
             return;
         }

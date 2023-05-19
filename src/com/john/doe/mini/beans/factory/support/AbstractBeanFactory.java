@@ -7,6 +7,7 @@ import com.john.doe.mini.beans.factory.config.BeanDefinition;
 import com.john.doe.mini.beans.factory.config.ConfigurableBeanFactory;
 import com.john.doe.mini.beans.factory.config.ConstructorArgumentValue;
 import com.john.doe.mini.beans.factory.config.ConstructorArgumentValues;
+import com.john.doe.mini.util.BeanUtils;
 import com.john.doe.mini.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,7 +73,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 // postProcessBeforeInitialization
                 applyBeanPostProcessorsBeforeInitialization(singleton, beanName);
                 // init-method
-                if (!StringUtils.isEmpty(bd.getInitMethodName())) {
+                if (StringUtils.hasLength(bd.getInitMethodName())) {
                     invokeInitMethod(bd, singleton);
                 }
                 // postProcessAfterInitialization
@@ -290,7 +291,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 }
 
                 // find a method to invoke
-                String methodName = "set" + pName.substring(0, 1).toUpperCase() + pName.substring(1);
+                String methodName = BeanUtils.getSetterName(pName);
                 Method method = null;
 
                 try {

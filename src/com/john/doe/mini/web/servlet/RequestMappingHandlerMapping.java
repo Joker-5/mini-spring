@@ -28,7 +28,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping {
         Object obj = null;
 
         String[] controllerNames = wac.getBeanDefinitionNames();
-        log.info("wac.getBeanDefinitionNames().length: {}", wac.getBeanDefinitionNames().length);
+        log.debug("wac.getBeanDefinitionNames().length: {}", wac.getBeanDefinitionNames().length);
         // get @RequestMapping controllers
         for (String controllerName : controllerNames) {
             log.info("get controller name: {}", controllerName);
@@ -58,7 +58,8 @@ public class RequestMappingHandlerMapping implements HandlerMapping {
     @Override
     public HandlerMethod getHandler(HttpServletRequest request) throws Exception {
         String url = request.getServletPath();
-        log.info("URL: {}, if contains urlMappingName: {}", url, mappingRegistry.getUrlMappingNames().contains(url));
+        log.debug("URL: {}, if contains urlMappingName: {}", url, mappingRegistry.getUrlMappingNames().contains(url));
+        
         if (!mappingRegistry.getUrlMappingNames().contains(url)) {
             return null;
         }

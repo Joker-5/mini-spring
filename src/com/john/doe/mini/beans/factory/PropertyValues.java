@@ -2,6 +2,7 @@ package com.john.doe.mini.beans.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by JOHN_DOE on 2023/5/7.
@@ -10,7 +11,14 @@ public class PropertyValues {
     private final List<PropertyValue> propertyValueList;
 
     public PropertyValues() {
-        this.propertyValueList = new ArrayList<>(0);
+        propertyValueList = new ArrayList<>(16);
+    }
+
+    public PropertyValues(Map<String, Object> map) {
+        propertyValueList = new ArrayList<>(16);
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            propertyValueList.add(new PropertyValue(entry.getKey(), entry.getValue()));
+        }
     }
 
     public List<PropertyValue> getPropertyValueList() {
